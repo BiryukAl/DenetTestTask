@@ -1,4 +1,5 @@
-package pro.denet.ethertreeapp.ui.theme
+
+package pro.denet.ethertreeapp.core.designsystem.theme
 
 import android.app.Activity
 import android.os.Build

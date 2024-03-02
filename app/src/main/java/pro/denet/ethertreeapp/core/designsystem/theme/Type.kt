@@ -1,4 +1,4 @@
-package pro.denet.ethertreeapp.ui.theme
+package pro.denet.ethertreeapp.core.designsystem.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
