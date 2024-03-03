@@ -61,7 +61,7 @@ fun DenetSecondaryButton(
 
 @Preview(showBackground = true)
 @Composable
-fun DenetSecondaryButtonPreview() {
+private fun DenetSecondaryButtonPreview() {
     EtherTreeAppTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),

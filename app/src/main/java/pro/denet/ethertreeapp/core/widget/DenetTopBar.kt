@@ -33,7 +33,7 @@ fun DenetTopBar(
 
 @Preview(showBackground = true)
 @Composable
-fun DenetTopBarPreview() {
+private fun DenetTopBarPreview() {
     EtherTreeAppTheme {
         DenetTopBar(
             title = "Ether Tree App"

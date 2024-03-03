@@ -28,7 +28,7 @@ fun Greeting(
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+private fun GreetingPreview() {
     EtherTreeAppTheme {
         Greeting("Android")
     }

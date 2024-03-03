@@ -39,7 +39,8 @@ fun DenetNodeCard(
             .wrapContentHeight(),
         shape = RoundedCornerShape(size = 16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = TreeAppTheme.treeAppColor.surface)
+        colors = CardDefaults.cardColors(containerColor = TreeAppTheme.treeAppColor.surface),
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier
@@ -49,7 +50,7 @@ fun DenetNodeCard(
             horizontalAlignment = Alignment.Start
         ) {
             DenetNodeCardTitle(
-                node.id,
+                node.id.toString(),
                 isRoot = node.isRoot,
                 onTrashClick = onTrash,
             )
@@ -112,9 +113,9 @@ private fun DenetNodeCardSupportingText(
 
 @Preview(showBackground = true)
 @Composable
-fun DenetNodeCardPreview() {
+private fun DenetNodeCardPreview() {
     val node = NodeUiModel(
-        id = "113",
+        id = 113,
         address = "0x" + "cd2a3d9f938e13cd947ec05abc7fe734df8dd826",
         isRoot = true
     )

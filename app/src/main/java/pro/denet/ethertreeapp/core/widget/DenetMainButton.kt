@@ -48,7 +48,7 @@ fun DenetMainButton(
 
 @Preview(showBackground = true)
 @Composable
-fun DenetMainButtonPreview() {
+private fun DenetMainButtonPreview() {
     EtherTreeAppTheme {
         DenetMainButton(
             text = "Add Node",

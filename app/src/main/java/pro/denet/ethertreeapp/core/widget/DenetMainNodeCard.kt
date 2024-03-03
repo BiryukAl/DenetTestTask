@@ -64,10 +64,17 @@ fun DenetMainNodeCard(
                 isRoot = node.isRoot,
                 onTrashClick = onTrashClick,
             )
-            DenetMainNodeCardSupportingText(title = stringResource(R.string.id), content = node.id)
-            DenetMainNodeCardSupportingText(
-                title = stringResource(R.string.address),
-                content = node.address
+            Text(
+                text = "${stringResource(R.string.id)}: $node.id",
+                style = TreeAppTheme.treeAppTypography.cardSupportingText,
+                color = TreeAppTheme.treeAppColor.primaryText,
+                overflow = TextOverflow.Visible
+            )
+            Text(
+                text = "${stringResource(R.string.address)}: $node.address",
+                style = TreeAppTheme.treeAppTypography.cardSupportingText,
+                color = TreeAppTheme.treeAppColor.secondaryText,
+                overflow = TextOverflow.Visible
             )
         }
     }
@@ -110,25 +117,12 @@ private fun DenetMainNodeCardTitle(
     }
 }
 
-@Composable
-private fun DenetMainNodeCardSupportingText(
-    title: String,
-    content: String,
-) {
-    Text(
-        text = "$title: $content",
-        style = TreeAppTheme.treeAppTypography.cardSupportingText,
-        color = TreeAppTheme.treeAppColor.secondaryText,
-        overflow = TextOverflow.Visible
-    )
-}
-
 
 @Preview(showBackground = true)
 @Composable
-fun DenetMainNodeCardPreview() {
+private fun DenetMainNodeCardPreview() {
     val node = NodeUiModel(
-        id = "113",
+        id = 113,
         address = "0x" + "cd2a3d9f938e13cd947ec05abc7fe734df8dd826",
         isRoot = true
     )
