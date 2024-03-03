@@ -15,14 +15,12 @@ import androidx.compose.ui.unit.dp
 import pro.denet.ethertreeapp.core.designsystem.icon.TreeAppIcon
 import pro.denet.ethertreeapp.core.designsystem.theme.EtherTreeAppTheme
 import pro.denet.ethertreeapp.core.designsystem.theme.TreeAppTheme
-import pro.denet.ethertreeapp.core.widget.model.SideIcon
 
 @Composable
 fun DenetMainButton(
     modifier: Modifier = Modifier,
     text: String,
     icon: ImageVector,
-    sideIcon: SideIcon = SideIcon.Left,
     onClick: () -> Unit
 ) {
     Button(
@@ -35,34 +33,16 @@ fun DenetMainButton(
         contentPadding = PaddingValues(horizontal = 15.dp),
         onClick = onClick,
     ) {
-        when (sideIcon) {
-            SideIcon.Left -> {
-                Icon(
-                    modifier = Modifier.padding(end = 10.dp),
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = TreeAppTheme.treeAppColor.onPrimary
-                )
-                Text(
-                    text = text,
-                    style = TreeAppTheme.treeAppTypography.buttonText
-                )
-            }
-
-            SideIcon.Right -> {
-                Text(
-                    text = text,
-                    style = TreeAppTheme.treeAppTypography.buttonText
-                )
-                Icon(
-                    modifier = Modifier.padding(start = 10.dp),
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = TreeAppTheme.treeAppColor.onPrimary
-                )
-            }
-        }
-
+        Icon(
+            modifier = Modifier.padding(end = 10.dp),
+            imageVector = icon,
+            contentDescription = null,
+            tint = TreeAppTheme.treeAppColor.onPrimary
+        )
+        Text(
+            text = text,
+            style = TreeAppTheme.treeAppTypography.buttonText
+        )
     }
 }
 
@@ -71,9 +51,8 @@ fun DenetMainButton(
 fun DenetMainButtonPreview() {
     EtherTreeAppTheme {
         DenetMainButton(
-            text = "To Right Node",
-            icon = TreeAppIcon.ArrowRight,
-            sideIcon = SideIcon.Right,
+            text = "Add Node",
+            icon = TreeAppIcon.Add,
             onClick = {}
         )
     }
