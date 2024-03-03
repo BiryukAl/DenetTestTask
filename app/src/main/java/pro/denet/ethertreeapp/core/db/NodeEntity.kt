@@ -10,7 +10,7 @@ data class NodeEntity(
     @ColumnInfo(name = "id")
     val id: Int = 0,
     @ColumnInfo(name = "address")
-    val address: String,
+    val address: String?,
     @ColumnInfo(name = "parent_id")
     val parentId: Int
 )

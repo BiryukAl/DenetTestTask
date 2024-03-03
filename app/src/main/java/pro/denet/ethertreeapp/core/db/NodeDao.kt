@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -19,4 +20,13 @@ interface NodeDao {
 
     @Query("SELECT * FROM node WHERE parent_id = :parentId")
     fun getChildrenByParentId(parentId: Int): Flow<List<NodeEntity>>
+
+    @Query("UPDATE node SET address = :address WHERE id = :idNode")
+    suspend fun addAddressNodeById(idNode: Int, address: String)
+
+    @Query("UPDATE node SET address = :address WHERE rowid = :rowId")
+    suspend fun addAddressNodeByRowId(rowId: Long, address: String)
+
+    @Query("SELECT * FROM node WHERE rowid = :rowId")
+    suspend fun getNodeByRowId(rowId: Long): NodeEntity?
 }
