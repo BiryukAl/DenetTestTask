@@ -24,6 +24,7 @@ import pro.denet.ethertreeapp.feature.navigateOnTree.presentation.MainNavigation
 import pro.denet.ethertreeapp.feature.navigateOnTree.presentation.MainNavigationOnTreeViewModel.MainScreenEvent.OnNavigateToParentNode
 import pro.denet.ethertreeapp.feature.navigateOnTree.presentation.MainNavigationOnTreeViewModel.MainScreenEvent.OnNodeTrashClick
 import pro.denet.ethertreeapp.feature.navigateOnTree.presentation.MainNavigationOnTreeViewModel.MainScreenEvent.OnParentNodeTrashClick
+import timber.log.Timber
 
 class MainNavigationOnTreeViewModel(
     private val addNodeToParentUseCase: AddNodeToParentUseCase,
@@ -36,7 +37,7 @@ class MainNavigationOnTreeViewModel(
     val screenState: StateFlow<MainScreenState> = _screenState.asStateFlow()
 
     private val _screenAction = MutableSharedFlow<MainScreenAction?>()
-    private val screenAction: SharedFlow<MainScreenAction?> = _screenAction.asSharedFlow()
+    val screenAction: SharedFlow<MainScreenAction?> = _screenAction.asSharedFlow()
 
     @Immutable
     data class MainScreenState(
@@ -53,7 +54,7 @@ class MainNavigationOnTreeViewModel(
         data class OnNodeTrashClick(val idNode: Int) : MainScreenEvent
         data class OnParentNodeTrashClick(val idNode: Int) : MainScreenEvent
         data class OnAddNode(val idParent: Int) : MainScreenEvent
-        data class OnNavigateToParentNode(val idNode: Int) : MainScreenEvent
+        data class OnNavigateToParentNode(val idCurrentNode: Int) : MainScreenEvent
         data class OnNavigateToChildNode(val idNode: Int) : MainScreenEvent
     }
 
@@ -71,9 +72,9 @@ class MainNavigationOnTreeViewModel(
         eventHandler(event = OnInit)
     }
 
-    private fun eventHandler(event: MainScreenEvent) {
+    fun eventHandler(event: MainScreenEvent) {
         when (event) {
-            is OnAddNode -> TODO()
+            is OnAddNode -> {Timber.d("Screen state: ${_screenState.value}" )}
             OnInit -> onInit()
             is OnNavigateToChildNode -> TODO()
             is OnNavigateToParentNode -> TODO()
@@ -85,7 +86,8 @@ class MainNavigationOnTreeViewModel(
     private fun onInit() = viewModelScope.launch {
         _screenState.emit(
             _screenState.value.copy(
-                isLoading = true,
+                isLoading = false,
+                // TODO: isLoading = true
             )
         )
         getRootNodeUseCase().fold(
@@ -107,8 +109,10 @@ class MainNavigationOnTreeViewModel(
                         )
                     )
                 }
+                Timber.d("Success in onInit -> getRootNodeUseCase -> state: ${_screenState.value}" )
             },
             onFailure = {
+                Timber.d("Error in onInit -> getRootNodeUseCase -> ", it)
                 _screenState.emit(
                     _screenState.value.copy(
                         isError = true,

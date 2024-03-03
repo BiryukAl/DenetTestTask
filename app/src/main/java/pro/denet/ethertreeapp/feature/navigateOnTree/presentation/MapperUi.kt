@@ -5,7 +5,7 @@ import pro.denet.ethertreeapp.feature.navigateOnTree.domain.share.NodeDto
 
 fun NodeDto.toNodeUiModel(): Result<NodeUiModel> = kotlin.runCatching {
     NodeUiModel(
-        id = this.id.toString(),
+        id = this.id,
         address = this.address,
         isRoot = this.isRoot,
     )
@@ -13,7 +13,7 @@ fun NodeDto.toNodeUiModel(): Result<NodeUiModel> = kotlin.runCatching {
 
 private fun NodeDto.NodeBrief.toNodeUiModel(): Result<NodeUiModel> = kotlin.runCatching {
     NodeUiModel(
-        id = this.id.toString(),
+        id = this.id,
         address = this.address,
         isRoot = this.isRoot,
     )
