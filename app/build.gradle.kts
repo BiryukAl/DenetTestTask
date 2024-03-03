@@ -71,17 +71,21 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.system.ui.controller)
 
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+
     implementation(libs.room)
     implementation(libs.room.ktx)
     ksp(libs.room.ksp)
+
+
+    implementation(libs.bignum)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
-
-    implementation(libs.bignum)
 
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)

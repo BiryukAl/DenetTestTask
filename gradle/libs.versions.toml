@@ -22,6 +22,8 @@ bignum = "0.3.9"
 collectionsImmutable = "0.3.5"
 kotlinSerialization = "1.6.2"
 
+coroutines = "1.7.3"
+
 room = "2.6.1"
 ksp = "1.9.0-1.0.13"
 
@@ -44,6 +46,9 @@ system-ui-controller = { group = "com.google.accompanist", name = "accompanist-s
 
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "collectionsImmutable" }
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
+
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 
 room = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ksp = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
