@@ -1,8 +1,13 @@
 package pro.denet.ethertreeapp.core.util
 
-object PrivateKey {
-    fun getPrivateKey(): String =
-        "gripe"+ "breve" + "matrix"+  "miles"
+
+interface PrivateKey {
+    fun getPrivateKey(): String
+
+    object Mock : PrivateKey {
+        override fun getPrivateKey(): String =
+            "gripe" + "breve" + "matrix" + "miles"
+
+    }
 
 }
-

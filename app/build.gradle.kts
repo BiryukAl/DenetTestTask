@@ -21,6 +21,7 @@ android {
         archivesName = "EtherTreeApp-v$versionName($versionCode)"
 
         buildConfigField("int", "VERSION_DB", "1")
+        buildConfigField("String", "DB_NAME", "\"NODE_DATABASE\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -72,7 +73,7 @@ dependencies {
     implementation(libs.system.ui.controller)
 
     implementation(libs.kotlinx.collections.immutable)
-    
+
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
 
