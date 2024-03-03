@@ -1,5 +1,6 @@
 package pro.denet.ethertreeapp.core.widget
 
+import androidx.compose.foundation.background
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,7 +17,9 @@ fun Greeting(
 ) {
     Text(
         text = "Hello $name!",
-        modifier = modifier,
+        modifier = modifier.background(
+            color = TreeAppTheme.treeAppColor.background
+        ),
         style = TreeAppTheme.treeAppTypography.cardTitle,
         color = TreeAppTheme.treeAppColor.primary,
         overflow = TextOverflow.Visible,
