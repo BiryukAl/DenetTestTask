@@ -2,7 +2,6 @@ package pro.denet.ethertreeapp.core.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import pro.denet.ethertreeapp.BuildConfig
 
 
 interface NodeDatabase {
@@ -12,7 +11,13 @@ interface NodeDatabase {
 @Database(
     entities = [
         NodeEntity::class
-    ], version = BuildConfig.VERSION_DB,
+    ], version = VERSION_DB,
     exportSchema = false
 )
 abstract class NodeDatabaseImpl : RoomDatabase(), NodeDatabase
+
+/*
+ BuildConfig.VERSION_DB
+//https://github.com/google/ksp/issues/350
+*/
+const val VERSION_DB: Int = 1
