@@ -2,7 +2,7 @@ package pro.denet.ethertreeapp.core.sl
 
 import android.content.Context
 import pro.denet.ethertreeapp.core.db.CacheModule
-import pro.denet.ethertreeapp.core.util.GetAddressNode
+import pro.denet.ethertreeapp.core.util.CalculateAddressNode
 import pro.denet.ethertreeapp.core.util.PrivateKey
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.AddNodeToParentUseCase
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.DeleteNodeUseCase
@@ -16,7 +16,7 @@ private fun provideInstances(context: Context, isMock: Boolean = false){
     ServiceLocator.register<Context>(context)
 
     // Util
-    ServiceLocator.register<GetAddressNode>(GetAddressNode.Mock(PrivateKey.Mock))
+    ServiceLocator.register<CalculateAddressNode>(CalculateAddressNode.Mock(PrivateKey.Mock))
 
     //Data
     if (isMock) {
