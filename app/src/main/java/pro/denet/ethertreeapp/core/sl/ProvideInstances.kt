@@ -4,6 +4,8 @@ import android.content.Context
 import pro.denet.ethertreeapp.core.db.CacheModule
 import pro.denet.ethertreeapp.core.util.CalculateAddressNode
 import pro.denet.ethertreeapp.core.util.PrivateKey
+import pro.denet.ethertreeapp.feature.navigateOnTree.data.NodeRepositoryImpl
+import pro.denet.ethertreeapp.feature.navigateOnTree.domain.share.NodeRepository
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.AddNodeToParentUseCase
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.DeleteNodeUseCase
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.GetNodeWithChildrenUseCase
@@ -11,7 +13,7 @@ import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.GetRootNodeU
 import pro.denet.ethertreeapp.feature.navigateOnTree.presentation.MainNavigationOnTreeViewModel
 
 
-private fun provideInstances(context: Context, isMock: Boolean = false){
+private fun provideInstances(context: Context, isMock: Boolean = false) {
 
     ServiceLocator.register<Context>(context)
 
@@ -25,7 +27,12 @@ private fun provideInstances(context: Context, isMock: Boolean = false){
         ServiceLocator.register<CacheModule>(CacheModule.Base(locate()))
     }
 
-//        ServiceLocator.register<NodeRepository>()
+    ServiceLocator.register<NodeRepository>(
+        NodeRepositoryImpl(
+            locate<CacheModule>().provideDataBase(),
+            locate()
+        )
+    )
 
     //Presentation
     ServiceLocator.register<AddNodeToParentUseCase>(AddNodeToParentUseCase(locate()))
@@ -51,7 +58,7 @@ interface ProvideInstances {
 
     class Mock(
         private val context: Context
-    ): ProvideInstances{
+    ) : ProvideInstances {
         init {
             provideInstances(context, isMock = true)
         }

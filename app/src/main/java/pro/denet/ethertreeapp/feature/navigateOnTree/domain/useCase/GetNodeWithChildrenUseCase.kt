@@ -6,7 +6,7 @@ import pro.denet.ethertreeapp.feature.navigateOnTree.domain.share.NodeRepository
 class GetNodeWithChildrenUseCase(
     private val repository: NodeRepository
 ) {
-    operator fun invoke(idNode: Int): Result<NodeDto> {
+    suspend operator fun invoke(idNode: Int): Result<NodeDto> {
         return repository.getNodeWithChildren(idNode)
     }
 }

@@ -6,7 +6,7 @@ import pro.denet.ethertreeapp.feature.navigateOnTree.domain.share.NodeRepository
 class GetRootNodeUseCase(
     private val repository: NodeRepository
 ) {
-    operator fun invoke(): Result<NodeDto> {
+    suspend operator fun invoke(): Result<NodeDto> {
         var root = repository.getNodeWithChildren(1)
         if (root.getOrNull() == null) {
             repository.addNodeToParent(0)

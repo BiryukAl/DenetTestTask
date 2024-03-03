@@ -5,7 +5,7 @@ import androidx.room.Room
 import pro.denet.ethertreeapp.BuildConfig
 
 interface CacheModule {
-    fun provideDataBase(): NodeDatabaseImpl
+    fun provideDataBase(): NodeDatabase
 
     class Base(private val context: Context) : CacheModule {
 
@@ -19,7 +19,7 @@ interface CacheModule {
                 .build()
         }
 
-        override fun provideDataBase(): NodeDatabaseImpl = database
+        override fun provideDataBase(): NodeDatabase = database
     }
 
     class Mock(private val context: Context) : CacheModule {
@@ -28,7 +28,7 @@ interface CacheModule {
                 .build()
         }
 
-        override fun provideDataBase(): NodeDatabaseImpl = database
+        override fun provideDataBase(): NodeDatabase = database
     }
 
 }

@@ -73,8 +73,8 @@ class MainNavigationOnTreeViewModel(
 
     private fun eventHandler(event: MainScreenEvent) {
         when (event) {
-            is OnAddNode -> onInit()
-            OnInit -> TODO()
+            is OnAddNode -> TODO()
+            OnInit -> onInit()
             is OnNavigateToChildNode -> TODO()
             is OnNavigateToParentNode -> TODO()
             is OnNodeTrashClick -> TODO()
