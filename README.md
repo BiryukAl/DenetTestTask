@@ -24,7 +24,7 @@ Contact: [Telegram](https://t.me/SanyaLn), [HH.ru](https://kazan.hh.ru/resume/c4
 [Figma Link](https://www.figma.com/file/hnhO6euzyY4L1H4HAZNokc/Ether-Tree-App?type=design&node-id=0%3A1&mode=design&t=76dxdPKoT3ZRM5DZ-1)
 
 Node:
-
 - id -> increment sequence
-- address -> HashCode.last(20)
+- address -> HashCode.last(
+  20) `Генерация адреса ноды происходит после вставки в db, тк hash генерируется из id+parentId, а id генерируется только после вставки в базу данных`
 - parent -> id-parent
