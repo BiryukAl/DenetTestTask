@@ -37,6 +37,7 @@ class NodeRepositoryImpl(
         return if (result > 0) {
             Result.success(Unit)
         } else Result.failure(RuntimeException())
+        // TODO: Add delete children node
     }
 
     override suspend fun getNodeWithChildren(idNode: Int): Result<NodeDto> {

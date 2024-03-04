@@ -13,7 +13,7 @@ fun NodeDto.toNodeUiModel(): Result<NodeUiModel> = kotlin.runCatching {
 
 private fun NodeDto.NodeBrief.toNodeUiModel(): Result<NodeUiModel> = kotlin.runCatching {
     NodeUiModel(
-        id = this.id,
+        id = this.idChildren,
         address = this.address,
         isRoot = this.isRoot,
     )

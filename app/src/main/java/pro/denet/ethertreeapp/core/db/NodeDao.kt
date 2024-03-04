@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NodeDao {
+    //INSERT INTO node (address, parent_id) VALUES ('cd2a3d9f938e13cd947ec05abc7fe734df8dd826', 1)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveNode(node: NodeEntity): Long
 

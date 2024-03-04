@@ -12,9 +12,9 @@ class App : Application() {
         val debugBuild: Boolean = false /* BuildConfig.DEBUG*/
 
         if (debugBuild) {
-            ProvideInstances.Base(this)
-        } else {
             ProvideInstances.Mock(this)
+        } else {
+            ProvideInstances.Base(this)
         }
     }
 }
