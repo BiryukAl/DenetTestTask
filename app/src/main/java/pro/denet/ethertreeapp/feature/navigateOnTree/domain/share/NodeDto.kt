@@ -11,7 +11,7 @@ data class NodeDto(
     val children: Flow<List<NodeBrief>>
 ) {
     data class NodeBrief(
-        val id: Int,
+        val idChildren: Int,
         val address: String,
         val isRoot: Boolean,
     )
