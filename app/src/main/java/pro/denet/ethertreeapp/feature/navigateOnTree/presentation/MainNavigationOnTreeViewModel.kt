@@ -63,6 +63,7 @@ class MainNavigationOnTreeViewModel(
         data class OnAddNode(val idParent: Int) : MainScreenEvent
         data object OnNavigateToParentNode : MainScreenEvent
         data class OnNavigateToChildNode(val idNode: Int) : MainScreenEvent
+        data object Reload : MainScreenEvent
     }
 
     @Immutable
@@ -85,23 +86,44 @@ class MainNavigationOnTreeViewModel(
     fun eventHandler(event: MainScreenEvent) {
         when (event) {
             is OnAddNode -> {
-                Timber.d("SateScreen: before add -> ${_screenState.value}")
+                Timber.d("SateScreen: before OnAddNode -> ${_screenState.value}")
                 onAddNode(idParent = event.idParent)
-                Timber.d("SateScreen: after add -> ${_screenState.value}")
+                Timber.d("SateScreen: after OnAddNode -> ${_screenState.value}")
             }
 
             OnInit -> onInit()
-            is OnNavigateToChildNode -> changeCurrentRootWithChildren(event.idNode)
-            is OnNavigateToParentNode -> onNavigateToParentNode()
-            is OnNodeTrashClick -> onNodeTrashClick(idNode = event.idNode)
-            is OnParentNodeTrashClick -> onParentNodeTrashClick()
+            is OnNavigateToChildNode -> {
+                onNavigateToChildNode(idNode = event.idNode)
+                Timber.d("SateScreen: after OnNavigateToChildNode -> ${_screenState.value}")
+            }
+
+            is OnNavigateToParentNode -> {
+                onNavigateToParentNode()
+                Timber.d("SateScreen: after OnNavigateToParentNode -> ${_screenState.value}")
+            }
+
+            is OnNodeTrashClick -> {
+                onNodeTrashClick(idNode = event.idNode)
+                Timber.d("SateScreen: after OnNodeTrashClick -> ${_screenState.value}")
+            }
+
+            is OnParentNodeTrashClick -> {
+                onParentNodeTrashClick()
+                Timber.d("SateScreen: after OnParentNodeTrashClick -> ${_screenState.value}")
+            }
+
+            MainScreenEvent.Reload -> onInit()
         }
+    }
+
+    private fun onNavigateToChildNode(idNode: Int) {
+        changeCurrentRootWithChildren(idNode)
     }
 
     private fun onNavigateToParentNode() {
         val currentNodeId = _screenState.value.currentNode?.id ?: return
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
 
             getNodeByIdUseCase(currentNodeId).fold(
                 onSuccess = {
@@ -123,7 +145,7 @@ class MainNavigationOnTreeViewModel(
 
         onNavigateToParentNode()
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
 
             val currentNode = getNodeByIdUseCase(currentNodeId)
 
@@ -160,76 +182,71 @@ class MainNavigationOnTreeViewModel(
         }
     }
 
-    private fun onAddNode(idParent: Int) = viewModelScope.launch(Dispatchers.IO) {
-        addNodeToParentUseCase(idParent).fold(
-            onSuccess = {
-                _screenAction.emit(
-                    MainScreenAction.ShowSnackbar(
-                        MainScreenAction.SnackbarMessageType.ADD_SUCCESS,
-                        ""
+    private fun onAddNode(idParent: Int) =
+        viewModelScope.launch(Dispatchers.IO) {
+            addNodeToParentUseCase(idParent).fold(
+                onSuccess = {
+                    _screenAction.emit(
+                        MainScreenAction.ShowSnackbar(
+                            MainScreenAction.SnackbarMessageType.ADD_SUCCESS,
+                            ""
+                        )
                     )
-                )
-            },
-            onFailure = {
-                _screenAction.emit(
-                    MainScreenAction.ShowSnackbar(
-                        MainScreenAction.SnackbarMessageType.ADD_FAILURE,
-                        ""
+                },
+                onFailure = {
+                    _screenAction.emit(
+                        MainScreenAction.ShowSnackbar(
+                            MainScreenAction.SnackbarMessageType.ADD_FAILURE,
+                            ""
+                        )
                     )
-                )
-            }
-        )
-    }
+                }
+            )
+        }
 
-    private fun onNodeTrashClick(idNode: Int) = viewModelScope.launch(Dispatchers.IO) {
-        deleteNodeUseCase(idNode).fold(
-            onSuccess = {
-                _screenAction.emit(
-                    MainScreenAction.ShowSnackbar(
-                        MainScreenAction.SnackbarMessageType.DELETE_SUCCESS,
-                        idNode.toString()
+    private fun onNodeTrashClick(idNode: Int) =
+        viewModelScope.launch(Dispatchers.IO) {
+            deleteNodeUseCase(idNode).fold(
+                onSuccess = {
+                    _screenAction.emit(
+                        MainScreenAction.ShowSnackbar(
+                            MainScreenAction.SnackbarMessageType.DELETE_SUCCESS,
+                            idNode.toString()
+                        )
                     )
-                )
-            },
-            onFailure = {
-                _screenAction.emit(
-                    MainScreenAction.ShowSnackbar(
-                        MainScreenAction.SnackbarMessageType.DELETE_FAILURE, idNode.toString()
+                },
+                onFailure = {
+                    _screenAction.emit(
+                        MainScreenAction.ShowSnackbar(
+                            MainScreenAction.SnackbarMessageType.DELETE_FAILURE,
+                            idNode.toString()
+                        )
                     )
-                )
-            }
-        )
-    }
+                }
+            )
+        }
 
 
     private fun changeCurrentRootWithChildren(idNode: Int) {
         val isRoot: Boolean = idNode == 1
-
         viewModelScope.launch {
-            _screenState.emit(
-                _screenState.value.copy(
-                    isLoading = false,
-                    // TODO: isLoading = true
-                )
-            )
+            val parent = if (isRoot) getRootNodeUseCase() else getNodeWithChildrenUseCase(idNode)
 
-            val useCase = if (isRoot) getRootNodeUseCase() else getNodeWithChildrenUseCase(idNode)
-
-            useCase.fold(
+            parent.fold(
                 onSuccess = { nodeDto ->
 
                     val currentNode = nodeDto.toNodeUiModel().getOrNull()
 
                     nodeDto.children
-                        .flowOn(Dispatchers.IO)
+                        .flowOn(Dispatchers.Main)
                         .onStart {
                             _screenState.emit(
                                 _screenState.value.copy(
-                                    isLoading = false,
-                                    // TODO: isLoading = true
+                                    isLoading = true,
                                 )
                             )
-                        }.onCompletion {
+                        }
+                        .onCompletion {
                             _screenState.emit(
                                 _screenState.value.copy(
                                     isLoading = false,
@@ -243,9 +260,9 @@ class MainNavigationOnTreeViewModel(
                                 )
                             )
                         }.collect { listDto ->
-
                             _screenState.emit(
                                 _screenState.value.copy(
+                                    isLoading = false,
                                     isError = currentNode == null,
                                     currentNode = currentNode,
                                     childrenCurrentNode = listDto
@@ -264,11 +281,6 @@ class MainNavigationOnTreeViewModel(
                         )
                     )
                 }
-            )
-            _screenState.emit(
-                _screenState.value.copy(
-                    isLoading = false,
-                )
             )
         }
     }

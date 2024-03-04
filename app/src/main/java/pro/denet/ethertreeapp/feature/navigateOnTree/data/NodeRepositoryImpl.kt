@@ -13,46 +13,42 @@ class NodeRepositoryImpl(
 ) : NodeRepository {
 
     private val nodeDao get() = nodeDatabase.nodeDao
+
     override suspend fun createRoot(): Result<Unit> {
-        val root = nodeDao.getNodeById(1)
-        if (root == null) {
-            val rowId = nodeDao.saveNode(
-                NodeEntity(
-                    address = null,
-                    parentId = null,
+        try {
+
+
+            val root = nodeDao.getNodeById(1)
+            if (root == null) {
+                val rowId = nodeDao.saveNode(
+                    NodeEntity(
+                        address = null,
+                        parentId = null,
+                    )
                 )
-            )
 
-            val nodeInDb =
-                nodeDao.getNodeByRowId(rowId)
-                    ?: return Result.failure(RuntimeException())
+                val nodeInDb =
+                    nodeDao.getNodeByRowId(rowId)
+                        ?: return Result.failure(RuntimeException())
 
-            val addressNewNode = calculateAddressNode(nodeInDb.id, nodeInDb.parentId ?: 1)
+                val addressNewNode = calculateAddressNode(nodeInDb.id, nodeInDb.parentId ?: 1)
 
-            val resultUpdate = nodeDao.addAddressNodeById(nodeInDb.id, addressNewNode)
-            return Result.success(resultUpdate)
+                val resultUpdate = nodeDao.addAddressNodeById(nodeInDb.id, addressNewNode)
+                return Result.success(resultUpdate)
+            }
+        } catch (ex: Exception) {
+            return Result.failure(ex)
         }
-
         return Result.success(Unit)
     }
 
+
     override suspend fun addNodeToParent(idParent: Int): Result<Unit> {
-        val rowIdNewNode = nodeDao.saveNode(
-            NodeEntity(
-                address = null,
-                parentId = idParent
-            )
-        )
-
-        val nodeInDb =
-            nodeDao.getNodeByRowId(rowIdNewNode)
-                ?: return Result.failure(RuntimeException())
-
-        val addressNewNode = calculateAddressNode(nodeInDb.id, nodeInDb.parentId ?: 1)
-
-        val resultUpdate = nodeDao.addAddressNodeById(nodeInDb.id, addressNewNode)
-
-        return Result.success(resultUpdate)
+        return try {
+            nodeDao.addNodeByParentId(idParent)
+        } catch (ex: Exception) {
+            Result.failure(ex)
+        }
     }
 
     override suspend fun deleteNode(idNode: Int): Result<Unit> {
