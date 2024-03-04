@@ -56,7 +56,7 @@ fun DenetNodeCard(
             )
             DenetNodeCardSupportingText(
                 title = stringResource(R.string.address),
-                content = node.address
+                content = "0x${node.address}"
             )
         }
     }
@@ -82,7 +82,7 @@ private fun DenetNodeCardTitle(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        if (isRoot) {
+        if (!isRoot) {
             IconButton(
                 onClick = onTrashClick
             ) {

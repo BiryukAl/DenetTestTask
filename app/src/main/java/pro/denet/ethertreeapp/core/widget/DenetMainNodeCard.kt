@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -40,10 +41,10 @@ fun DenetMainNodeCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(300.dp),
+            .wrapContentHeight(),
         shape = RoundedCornerShape(size = 16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = TreeAppTheme.treeAppColor.surface)
+        colors = CardDefaults.cardColors(containerColor = TreeAppTheme.treeAppColor.primary)
     ) {
         Column(
             modifier = Modifier
@@ -65,13 +66,13 @@ fun DenetMainNodeCard(
                 onTrashClick = onTrashClick,
             )
             Text(
-                text = "${stringResource(R.string.id)}: $node.id",
-                style = TreeAppTheme.treeAppTypography.cardSupportingText,
-                color = TreeAppTheme.treeAppColor.primaryText,
+                text = "${stringResource(R.string.id)}: ${node.id}",
+                style = TreeAppTheme.treeAppTypography.cardTitle,
+                color = TreeAppTheme.treeAppColor.onPrimary,
                 overflow = TextOverflow.Visible
             )
             Text(
-                text = "${stringResource(R.string.address)}: $node.address",
+                text = "${stringResource(R.string.address)}: 0x${node.address}",
                 style = TreeAppTheme.treeAppTypography.cardSupportingText,
                 color = TreeAppTheme.treeAppColor.secondaryText,
                 overflow = TextOverflow.Visible
@@ -99,7 +100,7 @@ private fun DenetMainNodeCardTitle(
                 Modifier.weight(1f),
             text = text,
             style = TreeAppTheme.treeAppTypography.cardTitle,
-            color = TreeAppTheme.treeAppColor.primaryText,
+            color = TreeAppTheme.treeAppColor.onPrimary,
         )
         if (isRoot) {
             IconButton(
