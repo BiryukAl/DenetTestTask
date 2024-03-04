@@ -13,6 +13,28 @@ class NodeRepositoryImpl(
 ) : NodeRepository {
 
     private val nodeDao get() = nodeDatabase.nodeDao
+    override suspend fun createRoot(): Result<Unit> {
+        val root = nodeDao.getNodeById(1)
+        if (root == null) {
+            val rowId = nodeDao.saveNode(
+                NodeEntity(
+                    address = null,
+                    parentId = null,
+                )
+            )
+
+            val nodeInDb =
+                nodeDao.getNodeByRowId(rowId)
+                    ?: return Result.failure(RuntimeException())
+
+            val addressNewNode = calculateAddressNode(nodeInDb.id, nodeInDb.parentId ?: 1)
+
+            val resultUpdate = nodeDao.addAddressNodeById(nodeInDb.id, addressNewNode)
+            return Result.success(resultUpdate)
+        }
+
+        return Result.success(Unit)
+    }
 
     override suspend fun addNodeToParent(idParent: Int): Result<Unit> {
         val rowIdNewNode = nodeDao.saveNode(
@@ -26,7 +48,7 @@ class NodeRepositoryImpl(
             nodeDao.getNodeByRowId(rowIdNewNode)
                 ?: return Result.failure(RuntimeException())
 
-        val addressNewNode = calculateAddressNode(nodeInDb.id, nodeInDb.parentId)
+        val addressNewNode = calculateAddressNode(nodeInDb.id, nodeInDb.parentId ?: 1)
 
         val resultUpdate = nodeDao.addAddressNodeById(nodeInDb.id, addressNewNode)
 
@@ -38,7 +60,6 @@ class NodeRepositoryImpl(
         return if (result > 0) {
             Result.success(Unit)
         } else Result.failure(RuntimeException())
-        // TODO: Add delete children node
     }
 
     override suspend fun getNodeWithChildren(idNode: Int): Result<NodeDto> {

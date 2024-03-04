@@ -9,7 +9,7 @@ class GetRootNodeUseCase(
     suspend operator fun invoke(): Result<NodeDto> {
         var root = repository.getNodeWithChildren(1)
         if (root.getOrNull() == null) {
-            repository.addNodeToParent(0)
+            repository.createRoot()
             root = repository.getNodeWithChildren(1)
         }
         return root

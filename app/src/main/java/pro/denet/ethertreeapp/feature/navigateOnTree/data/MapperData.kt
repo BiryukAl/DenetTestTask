@@ -11,7 +11,7 @@ fun NodeEntity.toNodeDto(childrenNode: Flow<List<NodeEntity>>): Result<NodeDto> 
         NodeDto(
             id = this.id,
             address = this.address ?: "",
-            parentId = this.parentId,
+            parentId = this.parentId ?: 1,
             isRoot = this.id == 1,
             children = childrenNode.map { listEntity ->
                 listEntity.mapNotNull {
@@ -34,7 +34,7 @@ fun NodeEntity.toNodeBriefDto(): Result<NodeBriefDto> = kotlin.runCatching {
     NodeBriefDto(
         id = this.id,
         address = this.address ?: "",
-        parentId = this.parentId,
+        parentId = this.parentId ?: 1,
         isRoot = this.id == 1,
     )
 }
