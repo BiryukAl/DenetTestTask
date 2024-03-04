@@ -1,17 +1,19 @@
 package pro.denet.ethertreeapp.feature.navigateOnTree.presentation
 
-import android.content.res.Resources.Theme
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -81,11 +83,14 @@ private fun MainScreenContent(
                     eventHandler(MainScreenEvent.OnAddNode(screenState.currentNode.id))
             }
         },
-        containerColor = TreeAppTheme.treeAppColor.background
+        containerColor = TreeAppTheme.treeAppColor.background,
     ) { contentPadding ->
 
         Surface(
-            modifier = Modifier.padding(contentPadding)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(contentPadding),
+            color = TreeAppTheme.treeAppColor.background
         ) {
             when (screenState.currentNode == null || screenState.isLoading) {
                 true -> {
@@ -93,29 +98,51 @@ private fun MainScreenContent(
                 }
 
                 false -> {
+                    println("here")
                     if (screenState.isError) {
                         // TODO: Add Error Message
+                        Text(
+                            modifier = Modifier
+                                .fillMaxSize(1f)
+                                .padding(top = 300.dp),
+                            text = "Error",
+                            color = TreeAppTheme.treeAppColor.primaryText
+                        )
                     } else {
-
-                        CurrentNode(
-                            currentNode = screenState.currentNode,
-                            onTrash = { eventHandler(MainScreenEvent.OnParentNodeTrashClick(idNode = it)) },
-                            toParent = {
-                                eventHandler(
-                                    MainScreenEvent.OnNavigateToParentNode(
-                                        idCurrentNode = it
+                        println("q")
+                        Column {
+                            CurrentNode(
+                                currentNode = screenState.currentNode,
+                                onTrash = {
+                                    eventHandler(
+                                        MainScreenEvent
+                                            .OnParentNodeTrashClick(idNode = it)
                                     )
-                                )
-                            }
-
-                        )
-                        NavigationOnChildrenContent(
-                            contentPadding = contentPadding,
-                            childrenCurrentNode = screenState.childrenCurrentNode,
-                            onClick = { eventHandler(MainScreenEvent.OnNavigateToChildNode(idNode = it)) },
-                            onTrash = { eventHandler(MainScreenEvent.OnNodeTrashClick(idNode = it)) },
-                        )
-
+                                },
+                                toParent = {
+                                    eventHandler(
+                                        MainScreenEvent.OnNavigateToParentNode(
+                                            idCurrentNode = it
+                                        )
+                                    )
+                                }
+                            )
+                            NavigationOnChildrenContent(
+                                childrenCurrentNode = screenState.childrenCurrentNode,
+                                onClick = {
+                                    eventHandler(
+                                        MainScreenEvent
+                                            .OnNavigateToChildNode(idNode = it)
+                                    )
+                                },
+                                onTrash = {
+                                    eventHandler(
+                                        MainScreenEvent
+                                            .OnNodeTrashClick(idNode = it)
+                                    )
+                                },
+                            )
+                        }
                     }
                 }
             }
@@ -127,7 +154,6 @@ private fun MainScreenContent(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NavigationOnChildrenContent(
-    contentPadding: PaddingValues,
     childrenCurrentNode: PersistentList<NodeUiModel>,
     onTrash: (Int) -> Unit,
     onClick: (Int) -> Unit,
@@ -136,9 +162,8 @@ fun NavigationOnChildrenContent(
         verticalArrangement = Arrangement.spacedBy(space = 12.dp),
         contentPadding = PaddingValues(all = 16.dp),
         modifier = Modifier
-            .fillMaxSize()
-            .padding(contentPadding)
-            .background(TreeAppTheme.treeAppColor.background)
+            .fillMaxWidth()
+            .wrapContentHeight()
     ) {
         items(
             items = childrenCurrentNode,
@@ -160,16 +185,28 @@ fun CurrentNode(
     onTrash: (Int) -> Unit,
     toParent: (Int) -> Unit,
 ) {
-    DenetMainNodeCard(node = currentNode,
-        onTrashClick = { onTrash(currentNode.id) }
-    ) { /* TODO: Add onTrash*/ }
-    DenetSecondaryButton(
-        text = "To Parent",
-        isActive = !currentNode.isRoot,
-        noActiveText = "No Parent",
-        icon = TreeAppIcon.ArrowUp,
-        onClick = { toParent(currentNode.id) }
-    )
+    Column(
+        modifier = Modifier
+            .wrapContentHeight(),
+    ) {
+        DenetMainNodeCard(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            node = currentNode,
+            onTrashClick = { onTrash(currentNode.id) },
+            onPress = {/* TODO: Add onTrash Click*/ }
+        )
+        DenetSecondaryButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            text = "To Parent",
+            isActive = !currentNode.isRoot,
+            noActiveText = "No Parent",
+            icon = TreeAppIcon.ArrowUp,
+            onClick = { toParent(currentNode.id) }
+        )
+    }
 }
 
 @Composable
