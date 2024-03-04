@@ -94,7 +94,7 @@ private fun DenetMainNodeCardTitle(
     ) {
         Text(
             textAlign = TextAlign.Center,
-            modifier = if (isRoot)
+            modifier = if (!isRoot)
                 Modifier.weight(9f)
             else
                 Modifier.weight(1f),
@@ -102,7 +102,7 @@ private fun DenetMainNodeCardTitle(
             style = TreeAppTheme.treeAppTypography.cardTitle,
             color = TreeAppTheme.treeAppColor.onPrimary,
         )
-        if (isRoot) {
+        if (!isRoot) {
             IconButton(
                 modifier = Modifier.weight(1f),
                 onClick = onTrashClick
@@ -125,7 +125,7 @@ private fun DenetMainNodeCardPreview() {
     val node = NodeUiModel(
         id = 113,
         address = "0x" + "cd2a3d9f938e13cd947ec05abc7fe734df8dd826",
-        isRoot = true
+        isRoot = false
     )
 
     EtherTreeAppTheme {
