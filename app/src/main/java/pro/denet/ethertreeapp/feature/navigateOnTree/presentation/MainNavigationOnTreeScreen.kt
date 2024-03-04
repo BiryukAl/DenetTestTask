@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -31,6 +32,7 @@ import pro.denet.ethertreeapp.core.designsystem.icon.TreeAppIcon
 import pro.denet.ethertreeapp.core.designsystem.theme.TreeAppTheme
 import pro.denet.ethertreeapp.core.sl.locate
 import pro.denet.ethertreeapp.core.widget.DenetFloatingActionButton
+import pro.denet.ethertreeapp.core.widget.DenetMainButton
 import pro.denet.ethertreeapp.core.widget.DenetMainNodeCard
 import pro.denet.ethertreeapp.core.widget.DenetNodeCard
 import pro.denet.ethertreeapp.core.widget.DenetProgressBar
@@ -103,14 +105,26 @@ private fun MainScreenContent(
 
                 false -> {
                     if (screenState.isError) {
-                        // TODO: Add Error Message
-                        Text(
-                            modifier = Modifier
-                                .fillMaxSize(1f)
-                                .padding(top = 300.dp),
-                            text = "Error",
-                            color = TreeAppTheme.treeAppColor.primaryText
-                        )
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+
+                            Text(
+                                modifier = Modifier.padding(bottom = 16.dp),
+                                text = stringResource(R.string.error),
+                                style = TreeAppTheme.treeAppTypography.cardTitle,
+                                color = TreeAppTheme.treeAppColor.primaryText
+                            )
+                            DenetMainButton(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                text = "Reload",
+                                icon = TreeAppIcon.Refresh
+                            ) { eventHandler(MainScreenEvent.Reload) }
+                        }
                     } else {
                         Column {
                             CurrentNode(

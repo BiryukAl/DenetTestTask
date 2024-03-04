@@ -68,10 +68,13 @@ private fun DenetSecondaryButtonPreview() {
             color = TreeAppTheme.treeAppColor.background
         ) {
             DenetSecondaryButton(
-                modifier = Modifier.fillMaxWidth().height(55.dp).padding(15.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(55.dp)
+                    .padding(15.dp),
                 text = "To Parent",
                 isActive = false,
-                icon = TreeAppIcon.ArrowRight,
+                icon = TreeAppIcon.ArrowUp,
                 noActiveText = "No Parent",
                 onClick = {}
             )
