@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import pro.denet.ethertreeapp.core.widget.model.NodeUiModel
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.AddNodeToParentUseCase
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.DeleteNodeUseCase
+import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.GetNodeByIdUseCase
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.GetNodeWithChildrenUseCase
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.GetRootNodeUseCase
 import pro.denet.ethertreeapp.feature.navigateOnTree.presentation.MainNavigationOnTreeViewModel.MainScreenEvent.OnAddNode
@@ -36,6 +37,7 @@ class MainNavigationOnTreeViewModel(
     private val deleteNodeUseCase: DeleteNodeUseCase,
     private val getNodeWithChildrenUseCase: GetNodeWithChildrenUseCase,
     private val getRootNodeUseCase: GetRootNodeUseCase,
+    private val getNodeByIdUseCase: GetNodeByIdUseCase,
 ) : ViewModel() {
 
     private val _screenState = MutableStateFlow(MainScreenState())
@@ -57,9 +59,9 @@ class MainNavigationOnTreeViewModel(
     sealed interface MainScreenEvent {
         data object OnInit : MainScreenEvent
         data class OnNodeTrashClick(val idNode: Int) : MainScreenEvent
-        data class OnParentNodeTrashClick(val idNode: Int) : MainScreenEvent
+        data object OnParentNodeTrashClick : MainScreenEvent
         data class OnAddNode(val idParent: Int) : MainScreenEvent
-        data class OnNavigateToParentNode(val idCurrentNode: Int) : MainScreenEvent
+        data object OnNavigateToParentNode : MainScreenEvent
         data class OnNavigateToChildNode(val idNode: Int) : MainScreenEvent
     }
 
@@ -69,7 +71,10 @@ class MainNavigationOnTreeViewModel(
             MainScreenAction
 
         enum class SnackbarMessageType {
-
+            DELETE_SUCCESS,
+            DELETE_FAILURE,
+            ADD_SUCCESS,
+            ADD_FAILURE,
         }
     }
 
@@ -80,78 +85,196 @@ class MainNavigationOnTreeViewModel(
     fun eventHandler(event: MainScreenEvent) {
         when (event) {
             is OnAddNode -> {
-                Timber.d("Screen state: ${_screenState.value}")
+                Timber.d("SateScreen: before add -> ${_screenState.value}")
+                onAddNode(idParent = event.idParent)
+                Timber.d("SateScreen: after add -> ${_screenState.value}")
             }
 
             OnInit -> onInit()
-            is OnNavigateToChildNode -> TODO()
-            is OnNavigateToParentNode -> TODO()
-            is OnNodeTrashClick -> TODO()
-            is OnParentNodeTrashClick -> TODO()
+            is OnNavigateToChildNode -> changeCurrentRootWithChildren(event.idNode)
+            is OnNavigateToParentNode -> onNavigateToParentNode()
+            is OnNodeTrashClick -> onNodeTrashClick(idNode = event.idNode)
+            is OnParentNodeTrashClick -> onParentNodeTrashClick()
         }
     }
 
-    private fun onInit() = viewModelScope.launch {
-        _screenState.emit(
-            _screenState.value.copy(
-                isLoading = false,
-                // TODO: isLoading = true
+    private fun onNavigateToParentNode() {
+        val currentNodeId = _screenState.value.currentNode?.id ?: return
+
+        viewModelScope.launch(Dispatchers.IO) {
+
+            getNodeByIdUseCase(currentNodeId).fold(
+                onSuccess = {
+                    changeCurrentRootWithChildren(it.parentId)
+                },
+                onFailure = {
+                    _screenState.emit(
+                        _screenState.value.copy(
+                            isError = true,
+                        )
+                    )
+                }
             )
-        )
-        getRootNodeUseCase().fold(
-            onSuccess = { nodeDto ->
+        }
+    }
 
-                val currentNode = nodeDto.toNodeUiModel().getOrNull()
+    private fun onParentNodeTrashClick() {
+        val currentNodeId = _screenState.value.currentNode?.id ?: return
 
-                nodeDto.children
-                    .flowOn(Dispatchers.IO)
-                    .onStart {
-                        _screenState.emit(
-                            _screenState.value.copy(
-                                isLoading = false,
-                                // TODO: isLoading = true
-                            )
-                        )
-                    }.onCompletion {
-                        _screenState.emit(
-                            _screenState.value.copy(
-                                isLoading = false,
-                            )
-                        )
-                    }.catch {
-                        Timber.d("Error in onInit -> getRootNodeUseCase -> flow ", it)
-                        _screenState.emit(
-                            _screenState.value.copy(
-                                isError = true,
-                            )
-                        )
-                    }.collect { listDto ->
+        onNavigateToParentNode()
 
-                        _screenState.emit(
-                            _screenState.value.copy(
-                                isError = currentNode == null,
-                                currentNode = currentNode,
-                                childrenCurrentNode = listDto
-                                    .toNodeUiModels()
-                                    .toPersistentList()
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val currentNode = getNodeByIdUseCase(currentNodeId)
+
+            currentNode.fold(
+                onSuccess = {
+                    deleteNodeUseCase(currentNodeId).fold(
+                        onSuccess = {
+                            _screenAction.emit(
+                                MainScreenAction.ShowSnackbar(
+                                    MainScreenAction.SnackbarMessageType.DELETE_SUCCESS,
+                                    currentNodeId.toString()
+                                )
                             )
+                        },
+                        onFailure = {
+                            _screenAction.emit(
+                                MainScreenAction.ShowSnackbar(
+                                    MainScreenAction.SnackbarMessageType.DELETE_FAILURE,
+                                    currentNodeId.toString()
+                                )
+                            )
+                        }
+                    )
+                },
+                onFailure = {
+                    _screenAction.emit(
+                        MainScreenAction.ShowSnackbar(
+                            MainScreenAction.SnackbarMessageType.DELETE_FAILURE,
+                            currentNodeId.toString()
                         )
-                    }
-                Timber.d("Success in onInit -> getRootNodeUseCase -> state: ${_screenState.value}")
+                    )
+                }
+            )
+        }
+    }
+
+    private fun onAddNode(idParent: Int) = viewModelScope.launch(Dispatchers.IO) {
+        addNodeToParentUseCase(idParent).fold(
+            onSuccess = {
+                _screenAction.emit(
+                    MainScreenAction.ShowSnackbar(
+                        MainScreenAction.SnackbarMessageType.ADD_SUCCESS,
+                        ""
+                    )
+                )
             },
             onFailure = {
-                Timber.d("Error in onInit -> getRootNodeUseCase -> ", it)
-                _screenState.emit(
-                    _screenState.value.copy(
-                        isError = true,
+                _screenAction.emit(
+                    MainScreenAction.ShowSnackbar(
+                        MainScreenAction.SnackbarMessageType.ADD_FAILURE,
+                        ""
                     )
                 )
             }
         )
-        _screenState.emit(
-            _screenState.value.copy(
-                isLoading = false,
-            )
+    }
+
+    private fun onNodeTrashClick(idNode: Int) = viewModelScope.launch(Dispatchers.IO) {
+        deleteNodeUseCase(idNode).fold(
+            onSuccess = {
+                _screenAction.emit(
+                    MainScreenAction.ShowSnackbar(
+                        MainScreenAction.SnackbarMessageType.DELETE_SUCCESS,
+                        idNode.toString()
+                    )
+                )
+            },
+            onFailure = {
+                _screenAction.emit(
+                    MainScreenAction.ShowSnackbar(
+                        MainScreenAction.SnackbarMessageType.DELETE_FAILURE, idNode.toString()
+                    )
+                )
+            }
         )
     }
+
+
+    private fun changeCurrentRootWithChildren(idNode: Int) {
+        val isRoot: Boolean = idNode == 1
+
+        viewModelScope.launch {
+            _screenState.emit(
+                _screenState.value.copy(
+                    isLoading = false,
+                    // TODO: isLoading = true
+                )
+            )
+
+            val useCase = if (isRoot) getRootNodeUseCase() else getNodeWithChildrenUseCase(idNode)
+
+            useCase.fold(
+                onSuccess = { nodeDto ->
+
+                    val currentNode = nodeDto.toNodeUiModel().getOrNull()
+
+                    nodeDto.children
+                        .flowOn(Dispatchers.IO)
+                        .onStart {
+                            _screenState.emit(
+                                _screenState.value.copy(
+                                    isLoading = false,
+                                    // TODO: isLoading = true
+                                )
+                            )
+                        }.onCompletion {
+                            _screenState.emit(
+                                _screenState.value.copy(
+                                    isLoading = false,
+                                )
+                            )
+                        }.catch {
+                            Timber.d("Error in onInit -> getRootNodeUseCase -> flow ", it)
+                            _screenState.emit(
+                                _screenState.value.copy(
+                                    isError = true,
+                                )
+                            )
+                        }.collect { listDto ->
+
+                            _screenState.emit(
+                                _screenState.value.copy(
+                                    isError = currentNode == null,
+                                    currentNode = currentNode,
+                                    childrenCurrentNode = listDto
+                                        .toNodeUiModels()
+                                        .toPersistentList()
+                                )
+                            )
+                        }
+                    Timber.d("Success in onInit -> getRootNodeUseCase -> state: ${_screenState.value}")
+                },
+                onFailure = {
+                    Timber.d("Error in onInit -> getRootNodeUseCase -> ", it)
+                    _screenState.emit(
+                        _screenState.value.copy(
+                            isError = true,
+                        )
+                    )
+                }
+            )
+            _screenState.emit(
+                _screenState.value.copy(
+                    isLoading = false,
+                )
+            )
+        }
+    }
+
+    private fun onInit() {
+        changeCurrentRootWithChildren(idNode = 1)
+    }
+
 }

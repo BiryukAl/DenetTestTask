@@ -4,5 +4,6 @@ interface NodeRepository {
     suspend fun addNodeToParent(idParent: Int): Result<Unit>
     suspend fun deleteNode(idNode: Int): Result<Unit>
     suspend fun getNodeWithChildren(idNode: Int): Result<NodeDto>
+    suspend fun getNodeById(idNode: Int): Result<NodeBriefDto>
 
 }

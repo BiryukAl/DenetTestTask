@@ -11,17 +11,21 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.coroutines.launch
 import pro.denet.ethertreeapp.R
 import pro.denet.ethertreeapp.core.designsystem.icon.TreeAppIcon
 import pro.denet.ethertreeapp.core.designsystem.theme.TreeAppTheme
@@ -98,7 +102,6 @@ private fun MainScreenContent(
                 }
 
                 false -> {
-                    println("here")
                     if (screenState.isError) {
                         // TODO: Add Error Message
                         Text(
@@ -109,21 +112,17 @@ private fun MainScreenContent(
                             color = TreeAppTheme.treeAppColor.primaryText
                         )
                     } else {
-                        println("q")
                         Column {
                             CurrentNode(
                                 currentNode = screenState.currentNode,
                                 onTrash = {
                                     eventHandler(
-                                        MainScreenEvent
-                                            .OnParentNodeTrashClick(idNode = it)
+                                        MainScreenEvent.OnParentNodeTrashClick
                                     )
                                 },
                                 toParent = {
                                     eventHandler(
-                                        MainScreenEvent.OnNavigateToParentNode(
-                                            idCurrentNode = it
-                                        )
+                                        MainScreenEvent.OnNavigateToParentNode
                                     )
                                 }
                             )
@@ -214,5 +213,22 @@ private fun MainScreenActions(
     screenAction: MainScreenAction?,
     snackbarHostState: SnackbarHostState
 ) {
+    val coroutineScope = rememberCoroutineScope()
 
+    LaunchedEffect(screenAction) {
+        when (screenAction) {
+            null -> Unit
+            is MainScreenAction.ShowSnackbar -> coroutineScope.launch {
+                snackbarHostState.showSnackbar(
+                    message = when (screenAction.messageType) {
+                        MainScreenAction.SnackbarMessageType.DELETE_SUCCESS -> "Node ${screenAction.param}, deleted"
+                        MainScreenAction.SnackbarMessageType.DELETE_FAILURE -> "Error node ${screenAction.param}, deleted"
+                        MainScreenAction.SnackbarMessageType.ADD_SUCCESS -> "Node ${screenAction.param}, added"
+                        MainScreenAction.SnackbarMessageType.ADD_FAILURE -> "Error node ${screenAction.param}, added"
+                    },
+                    duration = SnackbarDuration.Short
+                )
+            }
+        }
+    }
 }

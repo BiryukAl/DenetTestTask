@@ -8,6 +8,7 @@ import pro.denet.ethertreeapp.feature.navigateOnTree.data.NodeRepositoryImpl
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.share.NodeRepository
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.AddNodeToParentUseCase
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.DeleteNodeUseCase
+import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.GetNodeByIdUseCase
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.GetNodeWithChildrenUseCase
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.useCase.GetRootNodeUseCase
 import pro.denet.ethertreeapp.feature.navigateOnTree.presentation.MainNavigationOnTreeViewModel
@@ -37,11 +38,12 @@ private fun provideInstances(context: Context, isMock: Boolean = false) {
     //Presentation
     ServiceLocator.register<AddNodeToParentUseCase>(AddNodeToParentUseCase(locate()))
     ServiceLocator.register<DeleteNodeUseCase>(DeleteNodeUseCase(locate()))
+    ServiceLocator.register<GetNodeByIdUseCase>(GetNodeByIdUseCase(locate()))
     ServiceLocator.register<GetNodeWithChildrenUseCase>(GetNodeWithChildrenUseCase(locate()))
     ServiceLocator.register<GetRootNodeUseCase>(GetRootNodeUseCase(locate()))
 
     ServiceLocator.register<MainNavigationOnTreeViewModel>(
-        MainNavigationOnTreeViewModel(locate(), locate(), locate(), locate())
+        MainNavigationOnTreeViewModel(locate(), locate(), locate(), locate(), locate())
     )
 
 }

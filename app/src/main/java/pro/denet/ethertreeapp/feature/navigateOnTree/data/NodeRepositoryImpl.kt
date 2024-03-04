@@ -3,6 +3,7 @@ package pro.denet.ethertreeapp.feature.navigateOnTree.data
 import pro.denet.ethertreeapp.core.db.NodeDatabase
 import pro.denet.ethertreeapp.core.db.NodeEntity
 import pro.denet.ethertreeapp.core.util.CalculateAddressNode
+import pro.denet.ethertreeapp.feature.navigateOnTree.domain.share.NodeBriefDto
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.share.NodeDto
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.share.NodeRepository
 
@@ -48,5 +49,10 @@ class NodeRepositoryImpl(
 
         return parentNode.toNodeDto(childrenNode)
 
+    }
+
+    override suspend fun getNodeById(idNode: Int): Result<NodeBriefDto> {
+        val node = nodeDao.getNodeById(idNode)
+        return node?.toNodeBriefDto() ?: Result.failure(RuntimeException())
     }
 }

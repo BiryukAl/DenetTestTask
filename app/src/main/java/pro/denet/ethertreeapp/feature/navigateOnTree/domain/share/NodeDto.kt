@@ -16,3 +16,10 @@ data class NodeDto(
         val isRoot: Boolean,
     )
 }
+
+data class NodeBriefDto(
+    val id: Int,
+    val address: String,
+    val parentId: Int,
+    val isRoot: Boolean,
+)
