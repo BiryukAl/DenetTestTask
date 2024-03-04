@@ -25,6 +25,5 @@ Contact: [Telegram](https://t.me/SanyaLn), [HH.ru](https://kazan.hh.ru/resume/c4
 
 Node:
 - id -> increment sequence
-- address -> HashCode.last(
-  20) `Генерация адреса ноды происходит после вставки в db, тк hash генерируется из id+parentId, а id генерируется только после вставки в базу данных`
+- address -> HashCode.last(20) `Генерация адреса ноды происходит после вставки в db, тк hash генерируется из id+parentId, а id генерируется только после вставки в базу данных`
 - parent -> id-parent
