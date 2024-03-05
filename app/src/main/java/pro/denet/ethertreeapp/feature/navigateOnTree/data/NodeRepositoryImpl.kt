@@ -1,6 +1,6 @@
 package pro.denet.ethertreeapp.feature.navigateOnTree.data
 
-import pro.denet.ethertreeapp.core.db.NodeDatabase
+import pro.denet.ethertreeapp.core.db.NodeDao
 import pro.denet.ethertreeapp.core.db.NodeEntity
 import pro.denet.ethertreeapp.core.util.CalculateAddressNode
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.share.NodeBriefDto
@@ -8,16 +8,13 @@ import pro.denet.ethertreeapp.feature.navigateOnTree.domain.share.NodeDto
 import pro.denet.ethertreeapp.feature.navigateOnTree.domain.share.NodeRepository
 
 class NodeRepositoryImpl(
-    private val nodeDatabase: NodeDatabase,
+    private val nodeDao: NodeDao,
     private val calculateAddressNode: CalculateAddressNode,
 ) : NodeRepository {
 
-    private val nodeDao get() = nodeDatabase.nodeDao
 
     override suspend fun createRoot(): Result<Unit> {
         try {
-
-
             val root = nodeDao.getNodeById(1)
             if (root == null) {
                 val rowId = nodeDao.saveNode(

@@ -2,6 +2,7 @@ package pro.denet.ethertreeapp.core.sl
 
 import android.content.Context
 import pro.denet.ethertreeapp.core.db.CacheModule
+import pro.denet.ethertreeapp.core.db.NodeDao
 import pro.denet.ethertreeapp.core.util.CalculateAddressNode
 import pro.denet.ethertreeapp.core.util.PrivateKey
 import pro.denet.ethertreeapp.feature.navigateOnTree.data.NodeRepositoryImpl
@@ -27,10 +28,11 @@ private fun provideInstances(context: Context, isMock: Boolean = false) {
     } else {
         ServiceLocator.register<CacheModule>(CacheModule.Base(locate()))
     }
+    ServiceLocator.register<NodeDao>(locate<CacheModule>().provideDataBase().nodeDao)
 
     ServiceLocator.register<NodeRepository>(
         NodeRepositoryImpl(
-            locate<CacheModule>().provideDataBase(),
+            locate(),
             locate()
         )
     )
