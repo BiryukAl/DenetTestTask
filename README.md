@@ -15,8 +15,10 @@ Contact: [Telegram](https://t.me/SanyaLn), [HH.ru](https://kazan.hh.ru/resume/c4
 5. Название формировать из последних 20 байт хэша узла по аналогии с адресом кошельков Ethereum
 
 ## Result
+|Main Screen with ROOT                      |Main screen with child node                 |
+|-------------------------------------------|--------------------------------------------|
+|![Photo](/README/main_screen_root_node.png)|![Photo](/README/main_screen_child_node.png)|
 
-![Result Main Screen Photo](/README/main_screen.png)
 
 ### Design
 
